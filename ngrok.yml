@@ -1,0 +1,11 @@
+version: "2"
+# Masukkan authtoken ngrok kamu di sini jika belum login secara global:
+# authtoken: YOUR_NGROK_AUTHTOKEN_HERE
+
+tunnels:
+  kotobamaster:
+    proto: http
+    addr: 3000
+    # Jika kamu punya custom static domain dari ngrok, pasang di sini:
+    # hostname: your-subdomain.ngrok-free.app
+
