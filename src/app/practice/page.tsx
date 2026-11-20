@@ -22,6 +22,13 @@ export default function PracticePage() {
   const [wrongVocabs, setWrongVocabs] = useState<Vocabulary[]>([]);
   const [retestWrongVocabs, setRetestWrongVocabs] = useState<Vocabulary[]>([]);
 
+  // Time & Speed Tracking
+  const [questionStartTime, setQuestionStartTime] = useState<number>(0);
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
+  const [answerDuration, setAnswerDuration] = useState<number | null>(null);
+  const [totalTimeSpent, setTotalTimeSpent] = useState<number>(0);
+  const [speedPointsTotal, setSpeedPointsTotal] = useState<number>(0);
+
   // Current question interaction
   const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
@@ -56,12 +63,16 @@ export default function PracticePage() {
     setIsFinished(false);
     setSelectedOptionIndex(null);
     setIsAnswered(false);
+    setElapsedSeconds(0);
+    setAnswerDuration(null);
 
     if (!retest) {
       setInitialRunTotal(shuffled.length);
       setFirstAttemptCorrect(0);
       setWrongVocabs([]);
       setRetestWrongVocabs([]);
+      setTotalTimeSpent(0);
+      setSpeedPointsTotal(0);
     } else {
       setRetestWrongVocabs([]);
     }
@@ -97,6 +108,22 @@ export default function PracticePage() {
     }
   }, [currentIndex, currentVocab, autoPlay]);
 
+  // Live thinking stopwatch interval
+  useEffect(() => {
+    if (isAnswered || isFinished || !currentVocab) return;
+
+    const start = Date.now();
+    setQuestionStartTime(start);
+    setElapsedSeconds(0);
+    setAnswerDuration(null);
+
+    const interval = setInterval(() => {
+      setElapsedSeconds((Date.now() - start) / 1000);
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [currentIndex, currentVocab, isAnswered, isFinished]);
+
   const playAudio = (vocab?: Vocabulary) => {
     const target = vocab || currentVocab;
     if (!target) return;
@@ -110,14 +137,25 @@ export default function PracticePage() {
   const handleSelectOption = (index: number) => {
     if (isAnswered || !currentVocab) return;
 
+    const duration = questionStartTime > 0 ? (Date.now() - questionStartTime) / 1000 : 1.0;
+    setAnswerDuration(duration);
     setSelectedOptionIndex(index);
     setIsAnswered(true);
 
     const isCorrect = options[index].isCorrect;
 
     if (!isRetestMode) {
+      setTotalTimeSpent((prev) => prev + duration);
+
       if (isCorrect) {
         setFirstAttemptCorrect((prev) => prev + 1);
+
+        // Speed Factor Formula:
+        // <= 3.0s: 1.0 (100% full points - Reflex)
+        // <= 6.0s: 0.85 (85% points - Good)
+        // > 6.0s: 0.65 (65% points - Slow/Hesitant)
+        const points = duration <= 3.0 ? 1.0 : duration <= 6.0 ? 0.85 : 0.65;
+        setSpeedPointsTotal((prev) => prev + points);
       } else {
         setWrongVocabs((prev) => [...prev, currentVocab]);
       }
@@ -137,11 +175,70 @@ export default function PracticePage() {
     }
   };
 
-  // Win Rate calculation based on first attempt
+  // Base Accuracy Win Rate (First Attempt)
   const winRate = useMemo(() => {
     if (initialRunTotal === 0) return 0;
     return Math.round((firstAttemptCorrect / initialRunTotal) * 100);
   }, [firstAttemptCorrect, initialRunTotal]);
+
+  // Speed-Adjusted WR (Combines accuracy & answer speed)
+  const speedAdjustedWR = useMemo(() => {
+    if (initialRunTotal === 0) return 0;
+    return Math.round((speedPointsTotal / initialRunTotal) * 100);
+  }, [speedPointsTotal, initialRunTotal]);
+
+  // Average Thinking Time
+  const averageThinkingTime = useMemo(() => {
+    if (initialRunTotal === 0) return "0.0";
+    return (totalTimeSpent / initialRunTotal).toFixed(1);
+  }, [totalTimeSpent, initialRunTotal]);
+
+  // Japanese Mastery Rank
+  const masteryRank = useMemo(() => {
+    const avgSec = initialRunTotal > 0 ? totalTimeSpent / initialRunTotal : 0;
+
+    if (winRate >= 90 && avgSec < 3.0) {
+      return {
+        kanji: "神",
+        romaji: "Kami (Level Dewa)",
+        badge: "⚡ Insting Kilat",
+        bg: "bg-[#faeae8]",
+        border: "border-[#e07a72]",
+        color: "text-[#c53d34]",
+        desc: "Luar biasa! Akurasi mendekati sempurna dan kecepatan mengingat secepat kilat layaknya penutur asli!",
+      };
+    } else if (winRate >= 80 && avgSec < 5.0) {
+      return {
+        kanji: "達人",
+        romaji: "Tatsujin (Master)",
+        badge: "🥋 Cepat & Tepat",
+        bg: "bg-[#fff3e0]",
+        border: "border-[#ffb74d]",
+        color: "text-[#e65100]",
+        desc: "Hebat! Kosakata sudah dikuasai dengan sangat baik tanpa banyak ragu.",
+      };
+    } else if (winRate >= 70) {
+      return {
+        kanji: "武士",
+        romaji: "Bushi (Pendekar Mahir)",
+        badge: "⚔️ Mahir",
+        bg: "bg-[#e8f5e9]",
+        border: "border-[#81c784]",
+        color: "text-[#2e7d32]",
+        desc: "Bagus! Kamu sudah memahami sebagian besar kosakata dengan stabil.",
+      };
+    } else {
+      return {
+        kanji: "見習い",
+        romaji: "Minarai (Pemula)",
+        badge: "📖 Terus Latih Refleks",
+        bg: "bg-[#eceff1]",
+        border: "border-[#b0bec5]",
+        color: "text-[#455a64]",
+        desc: "Awal yang baik! Terus ulangi kuis untuk melatih refleks dan kecepatan ingatanmu.",
+      };
+    }
+  }, [winRate, totalTimeSpent, initialRunTotal]);
 
   // Start Retest for incorrect words
   const handleStartRetest = () => {
@@ -176,7 +273,7 @@ export default function PracticePage() {
             <p className="text-[11px] text-[#7e7166] truncate">
               {isRetestMode
                 ? `${queue.length} kata yang perlu diulang`
-                : `Total ${initialRunTotal} kosakata`}
+                : `Total ${initialRunTotal} kosakata • Uji Kecepatan & Akurasi`}
             </p>
           </div>
         </div>
@@ -235,9 +332,34 @@ export default function PracticePage() {
 
           {/* Question Card */}
           <div className="p-5 sm:p-8 rounded-3xl bg-white border border-[#e8dfcf] shadow-sm text-center space-y-4 sm:space-y-6 relative overflow-hidden">
-            {/* Number badge */}
-            <div className="absolute top-3 right-3 text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-[#fbf9f5] border border-[#e8ded0] text-[#8f8175] font-mono">
-              #{currentVocab.id}
+            {/* Top Bar inside Card: ID badge & Thinking Stopwatch */}
+            <div className="flex items-center justify-between">
+              {/* Live Thinking Timer Badge */}
+              <div
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold transition-all ${
+                  isAnswered
+                    ? "bg-[#f0f4f8] text-[#334e68] border border-[#d9e2ec]"
+                    : elapsedSeconds > 5
+                    ? "bg-[#fff3e0] text-[#d97706] border border-[#fde68a] animate-pulse"
+                    : "bg-[#f4efe4] text-[#786a5d] border border-[#e2d8c7]"
+                }`}
+              >
+                <span>⏱️</span>
+                <span>
+                  {isAnswered && answerDuration !== null
+                    ? `${answerDuration.toFixed(1)}s`
+                    : `${elapsedSeconds.toFixed(1)}s`}
+                </span>
+                {!isAnswered && (
+                  <span className="text-[10px] text-[#9c8e82] hidden sm:inline">
+                    (mikir)
+                  </span>
+                )}
+              </div>
+
+              <div className="text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full bg-[#fbf9f5] border border-[#e8ded0] text-[#8f8175] font-mono">
+                #{currentVocab.id}
+              </div>
             </div>
 
             {/* Kanji & Kana */}
@@ -323,6 +445,37 @@ export default function PracticePage() {
           {/* Post-Answer Feedback & Next Button */}
           {isAnswered && (
             <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-[#e2d8c7] shadow-sm space-y-3 sm:space-y-4">
+              {/* Answer Speed Feedback Pill */}
+              {answerDuration !== null && (
+                <div className="flex items-center justify-between text-xs px-3.5 py-2 rounded-xl bg-[#faf7f0] border border-[#ebdcc9]">
+                  <div className="flex items-center gap-1.5 text-[#5e5145]">
+                    <span>⏱️</span>
+                    <span>
+                      Waktu berpikir: <strong>{answerDuration.toFixed(1)} detik</strong>
+                    </span>
+                  </div>
+                  <span
+                    className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                      options[selectedOptionIndex ?? 0]?.isCorrect
+                        ? answerDuration <= 3.0
+                          ? "bg-[#e8f5e9] text-[#2e7d32]"
+                          : answerDuration <= 6.0
+                          ? "bg-[#fff3e0] text-[#e65100]"
+                          : "bg-[#eceff1] text-[#455a64]"
+                        : "bg-[#ffebee] text-[#c62828]"
+                    }`}
+                  >
+                    {options[selectedOptionIndex ?? 0]?.isCorrect
+                      ? answerDuration <= 3.0
+                        ? "⚡ Kilat (100% Poin)"
+                        : answerDuration <= 6.0
+                        ? "🎯 Cepat (85% Poin)"
+                        : "🤔 Masih Ragu (65% Poin)"
+                      : "❌ Salah (0 Poin)"}
+                  </span>
+                </div>
+              )}
+
               {currentVocab.exampleSentence && (
                 <div className="text-xs bg-[#faf6ee] p-3 sm:p-3.5 rounded-xl border border-[#ebdcc9] space-y-1">
                   <span className="font-semibold text-[#7d4838]">Contoh Kalimat:</span>
@@ -351,6 +504,7 @@ export default function PracticePage() {
       ) : isFinished ? (
         /* Completion / Results Screen */
         <div className="p-5 sm:p-8 rounded-3xl bg-white border border-[#e8dfcf] shadow-sm text-center space-y-6">
+          {/* Header Title */}
           <div className="space-y-2">
             <div className="text-4xl sm:text-5xl">🎌</div>
             <h2 className="text-xl sm:text-2xl font-extrabold text-[#2b2520]">
@@ -363,32 +517,89 @@ export default function PracticePage() {
             <p className="text-xs sm:text-sm text-[#73665c] max-w-sm mx-auto leading-relaxed">
               {isRetestMode && retestWrongVocabs.length === 0
                 ? "Semua kosakata yang sebelumnya salah sekarang sudah berhasil kamu jawab dengan benar!"
-                : "Berikut adalah rekap skor akurasi (Win Rate) dan hasil belajarmu."}
+                : "Berikut rekap performa akurasi, waktu berpikir, dan peringkat refleks belajarmu."}
             </p>
           </div>
 
-          {/* Win Rate Cards (Responsive 3 Columns) */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-3 max-w-lg mx-auto">
+          {/* Japanese Mastery Rank Badge */}
+          {!isRetestMode && (
+            <div
+              className={`p-5 rounded-2xl border ${masteryRank.bg} ${masteryRank.border} text-center space-y-2 max-w-lg mx-auto shadow-sm`}
+            >
+              <div className="inline-block px-3 py-0.5 rounded-full bg-white/80 border text-[11px] font-semibold tracking-wide text-[#554b42]">
+                Gelar Penguasaan • 称号
+              </div>
+              <div className="flex items-center justify-center gap-3">
+                <span className={`text-4xl sm:text-5xl font-black font-japanese ${masteryRank.color}`}>
+                  {masteryRank.kanji}
+                </span>
+                <div className="text-left">
+                  <div className={`font-bold text-base sm:text-lg ${masteryRank.color}`}>
+                    {masteryRank.romaji}
+                  </div>
+                  <div className="text-xs font-semibold text-[#665a50]">
+                    {masteryRank.badge}
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-[#5f5348] leading-relaxed pt-1">
+                {masteryRank.desc}
+              </p>
+            </div>
+          )}
+
+          {/* 4 Performance Metric Cards (Responsive Grid) */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 max-w-xl mx-auto">
+            {/* 1. Base Accuracy WR */}
             <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#faf6ee] border border-[#ebdcc9]">
-              <span className="text-[10px] sm:text-xs text-[#7d6f63] font-medium block">Win Rate</span>
-              <div className="text-xl sm:text-3xl font-extrabold text-[#c53d34] mt-1">
+              <span className="text-[10px] sm:text-xs text-[#7d6f63] font-medium block">
+                Akurasi (Base WR)
+              </span>
+              <div className="text-xl sm:text-2xl font-extrabold text-[#c53d34] mt-1">
                 {winRate}%
               </div>
+              <span className="text-[10px] text-[#9c8e82]">
+                {firstAttemptCorrect}/{initialRunTotal} Benar
+              </span>
             </div>
 
-            <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#eef7f0] border border-[#d2edd6]">
-              <span className="text-[10px] sm:text-xs text-[#3b7e4f] font-medium block">Benar Putaran 1</span>
-              <div className="text-xl sm:text-3xl font-extrabold text-[#2e7d32] mt-1">
-                {firstAttemptCorrect}
-                <span className="text-xs font-normal text-[#608764]">/{initialRunTotal}</span>
+            {/* 2. Speed-Adjusted WR */}
+            <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#fff8e1] border border-[#ffe082]">
+              <span className="text-[10px] sm:text-xs text-[#b78103] font-medium block">
+                Speed-Adjusted WR
+              </span>
+              <div className="text-xl sm:text-2xl font-extrabold text-[#f57f17] mt-1">
+                {speedAdjustedWR}%
               </div>
+              <span className="text-[10px] text-[#b78103]">
+                Akurasi + Kecepatan
+              </span>
             </div>
 
+            {/* 3. Avg Thinking Time */}
+            <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#eef7f0] border border-[#d2edd6]">
+              <span className="text-[10px] sm:text-xs text-[#3b7e4f] font-medium block">
+                Rata-rata Berpikir
+              </span>
+              <div className="text-xl sm:text-2xl font-extrabold text-[#2e7d32] mt-1">
+                {averageThinkingTime}s
+              </div>
+              <span className="text-[10px] text-[#558b2f]">
+                per soal
+              </span>
+            </div>
+
+            {/* 4. Incorrect Words Count */}
             <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#faeae8] border border-[#f5cfca]">
-              <span className="text-[10px] sm:text-xs text-[#b83b32] font-medium block">Perlu Diulang</span>
-              <div className="text-xl sm:text-3xl font-extrabold text-[#c53d34] mt-1">
+              <span className="text-[10px] sm:text-xs text-[#b83b32] font-medium block">
+                Perlu Diulang
+              </span>
+              <div className="text-xl sm:text-2xl font-extrabold text-[#c53d34] mt-1">
                 {isRetestMode ? retestWrongVocabs.length : wrongVocabs.length}
               </div>
+              <span className="text-[10px] text-[#b83b32]">
+                Kata Keliru
+              </span>
             </div>
           </div>
 
