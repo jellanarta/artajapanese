@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
 import { VOCABULARY_LIST, Vocabulary } from "@/data/vocabularies";
 import { playVocabAudio } from "@/utils/audio";
@@ -10,10 +10,23 @@ interface QuizOption {
   isCorrect: boolean;
 }
 
+// Shuffle helper
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+};
+
 export default function PracticePage() {
-  // Test queue and state
-  const [queue, setQueue] = useState<Vocabulary[]>([]);
+  // Test queue and state (Initialized with VOCABULARY_LIST, shuffled on client mount)
+  const [queue, setQueue] = useState<Vocabulary[]>(VOCABULARY_LIST);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Guard to ensure audio only plays once per unique question
+  const lastPlayedVocabIdRef = useRef<number | null>(null);
 
   // Scoring & tracking
   const [isRetestMode, setIsRetestMode] = useState(false);
@@ -42,21 +55,12 @@ export default function PracticePage() {
   // Completion state
   const [isFinished, setIsFinished] = useState(false);
 
-  // Shuffle helper
-  const shuffleArray = <T,>(array: T[]): T[] => {
-    const arr = [...array];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  };
-
-  // Initialize Quiz
+  // Initialize Quiz (for restarting or retest)
   const startQuiz = useCallback((items?: Vocabulary[], retest: boolean = false) => {
     const listToUse = items && items.length > 0 ? items : VOCABULARY_LIST;
     const shuffled = shuffleArray(listToUse);
 
+    lastPlayedVocabIdRef.current = null;
     setQueue(shuffled);
     setCurrentIndex(0);
     setIsRetestMode(retest);
@@ -102,8 +106,9 @@ export default function PracticePage() {
     setSelectedOptionIndex(null);
     setIsAnswered(false);
 
-    // Auto-play audio if enabled
-    if (autoPlay) {
+    // Auto-play audio only once per question
+    if (autoPlay && lastPlayedVocabIdRef.current !== currentVocab.id) {
+      lastPlayedVocabIdRef.current = currentVocab.id;
       playAudio(currentVocab);
     }
   }, [currentIndex, currentVocab, autoPlay]);
