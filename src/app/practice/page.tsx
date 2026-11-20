@@ -330,8 +330,8 @@ export default function PracticePage() {
             </div>
           </div>
 
-          {/* Question Card */}
-          <div className="p-5 sm:p-8 rounded-3xl bg-white border border-[#e8dfcf] shadow-sm text-center space-y-4 sm:space-y-6 relative overflow-hidden">
+          {/* Question Card (Compact & Fitted for Mobile Screens) */}
+          <div className="p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-white border border-[#e8dfcf] shadow-sm text-center space-y-3 sm:space-y-5 relative overflow-hidden">
             {/* Top Bar inside Card: ID badge & Thinking Stopwatch */}
             <div className="flex items-center justify-between">
               {/* Live Thinking Timer Badge */}
@@ -397,10 +397,11 @@ export default function PracticePage() {
             </p>
           </div>
 
-          {/* 5 Multiple Choice Options (Touch-Friendly) */}
-          <div className="space-y-2 sm:space-y-2.5">
+          {/* 5 Multiple Choice Options (2-Column Grid for Fast Tapping without Scrolling) */}
+          <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
             {options.map((opt, idx) => {
               const isSelected = selectedOptionIndex === idx;
+              const isLastOption = idx === options.length - 1;
 
               let btnStyle = "bg-white border-[#e0d6c4] text-[#332b25] hover:border-[#c53d34]/60 hover:bg-[#fcfbf8] active:bg-[#f8f5ee]";
 
@@ -423,18 +424,20 @@ export default function PracticePage() {
                   type="button"
                   disabled={isAnswered}
                   onClick={() => handleSelectOption(idx)}
-                  className={`w-full min-h-[50px] p-3.5 sm:p-4 rounded-2xl border text-left font-medium text-xs sm:text-sm flex items-center justify-between gap-3 transition-all active:scale-[0.99] ${btnStyle}`}
+                  className={`min-h-[46px] sm:min-h-[52px] p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border text-left font-medium text-xs sm:text-sm flex items-center justify-between gap-2 transition-all active:scale-[0.98] ${btnStyle} ${
+                    isLastOption ? "col-span-2" : "col-span-1"
+                  }`}
                 >
-                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                    <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#f4ece0] text-[#6b5e53] text-[11px] sm:text-xs font-bold flex items-center justify-center border border-[#e0d6c4] flex-shrink-0">
+                  <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+                    <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#f4ece0] text-[#6b5e53] text-[10px] sm:text-xs font-bold flex items-center justify-center border border-[#e0d6c4] flex-shrink-0">
                       {String.fromCharCode(65 + idx)}
                     </span>
-                    <span className="leading-snug break-words">{opt.text}</span>
+                    <span className="leading-snug break-words text-xs sm:text-sm">{opt.text}</span>
                   </div>
 
                   {isAnswered && (
-                    <span className="text-xs sm:text-sm flex-shrink-0 font-semibold">
-                      {opt.isCorrect ? "✓ Benar" : isSelected ? "✗ Salah" : ""}
+                    <span className="text-[11px] sm:text-xs flex-shrink-0 font-bold">
+                      {opt.isCorrect ? "✓" : isSelected ? "✗" : ""}
                     </span>
                   )}
                 </button>
