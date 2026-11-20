@@ -1,12 +1,14 @@
 // Japanese Audio Player with Embedded Data URIs & Fallbacks
 // Immune to ngrok warning intercepts, mobile network blocks, and browser autoplay quirks!
 import { AUDIO_BASE64 } from "@/data/audio-base64";
+import { SENTENCE_AUDIO_BASE64 } from "@/data/sentence-audio-base64";
 
 let currentAudio: HTMLAudioElement | null = null;
 let currentSource: AudioBufferSourceNode | null = null;
 let audioContext: AudioContext | null = null;
 let playCounter = 0;
 const audioBufferCache: Map<number, AudioBuffer> = new Map();
+const sentenceBufferCache: Map<number, AudioBuffer> = new Map();
 
 // Helper to initialize/resume AudioContext
 function getAudioContext(): AudioContext | null {
@@ -47,7 +49,6 @@ export async function playVocabAudio(
 ): Promise<boolean> {
   if (typeof window === "undefined") return false;
 
-  // Stop any active sound immediately
   stopJapaneseAudio();
   const thisPlayId = ++playCounter;
 
@@ -63,7 +64,6 @@ export async function playVocabAudio(
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         await playPromise;
-        // If another audio was triggered while starting, stop this one
         if (thisPlayId !== playCounter) {
           audio.pause();
           return false;
@@ -71,7 +71,6 @@ export async function playVocabAudio(
         return true;
       }
     } catch (err: unknown) {
-      // If playback was cancelled because a new sound started or user stopped it, do NOT fallback
       if (err instanceof DOMException && err.name === "AbortError") {
         return false;
       }
@@ -113,6 +112,89 @@ export async function playVocabAudio(
       }
 
       const utterance = new SpeechSynthesisUtterance(kana);
+      utterance.lang = "ja-JP";
+      utterance.rate = rate;
+      window.speechSynthesis.speak(utterance);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  return false;
+}
+
+// Play Example Sentence Audio
+export async function playSentenceAudio(
+  vocabId: number,
+  sentenceKana: string,
+  rate: number = 0.9
+): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+
+  stopJapaneseAudio();
+  const thisPlayId = ++playCounter;
+
+  const base64Data = SENTENCE_AUDIO_BASE64[vocabId];
+
+  // 1. Primary: Embedded Base64 MP3 for example sentence
+  if (base64Data) {
+    try {
+      const audio = new Audio(base64Data);
+      currentAudio = audio;
+      audio.playbackRate = rate;
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        await playPromise;
+        if (thisPlayId !== playCounter) {
+          audio.pause();
+          return false;
+        }
+        return true;
+      }
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === "AbortError") {
+        return false;
+      }
+      if (thisPlayId !== playCounter) return false;
+    }
+
+    // 2. Web Audio API
+    try {
+      const ctx = getAudioContext();
+      if (ctx && thisPlayId === playCounter) {
+        let buffer = sentenceBufferCache.get(vocabId);
+        if (!buffer) {
+          const arrayBuffer = base64ToArrayBuffer(base64Data);
+          buffer = await ctx.decodeAudioData(arrayBuffer);
+          sentenceBufferCache.set(vocabId, buffer);
+        }
+
+        if (thisPlayId !== playCounter) return false;
+
+        const source = ctx.createBufferSource();
+        currentSource = source;
+        source.buffer = buffer;
+        source.playbackRate.value = rate;
+        source.connect(ctx.destination);
+        source.start(0);
+        return true;
+      }
+    } catch (webAudioErr) {
+      console.warn("Web Audio API decode sentence audio failed:", webAudioErr);
+    }
+  }
+
+  // 3. Fallback: Web Speech API
+  if ("speechSynthesis" in window && thisPlayId === playCounter) {
+    try {
+      window.speechSynthesis.cancel();
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+
+      const utterance = new SpeechSynthesisUtterance(sentenceKana);
       utterance.lang = "ja-JP";
       utterance.rate = rate;
       window.speechSynthesis.speak(utterance);

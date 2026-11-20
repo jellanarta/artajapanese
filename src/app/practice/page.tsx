@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
 import { VOCABULARY_LIST, Vocabulary } from "@/data/vocabularies";
-import { playVocabAudio } from "@/utils/audio";
+import { playVocabAudio, playSentenceAudio } from "@/utils/audio";
 
 interface QuizOption {
   text: string;
@@ -51,6 +51,7 @@ export default function PracticePage() {
   const [autoPlay, setAutoPlay] = useState(true);
   const [audioSpeed, setAudioSpeed] = useState<number>(0.9);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [isPlayingSentenceAudio, setIsPlayingSentenceAudio] = useState(false);
 
   // Completion state
   const [isFinished, setIsFinished] = useState(false);
@@ -137,6 +138,16 @@ export default function PracticePage() {
     setTimeout(() => {
       setIsPlayingAudio(false);
     }, 1200);
+  };
+
+  const playSentence = (vocab?: Vocabulary) => {
+    const target = vocab || currentVocab;
+    if (!target || !target.exampleSentence) return;
+    setIsPlayingSentenceAudio(true);
+    playSentenceAudio(target.id, target.exampleSentence.kana, audioSpeed);
+    setTimeout(() => {
+      setIsPlayingSentenceAudio(false);
+    }, 3000);
   };
 
   const handleSelectOption = (index: number) => {
@@ -485,14 +496,50 @@ export default function PracticePage() {
               )}
 
               {currentVocab.exampleSentence && (
-                <div className="text-xs bg-[#faf6ee] p-3 sm:p-3.5 rounded-xl border border-[#ebdcc9] space-y-1">
-                  <span className="font-semibold text-[#7d4838]">Contoh Kalimat:</span>
-                  <p className="font-japanese text-[#2b2520] text-xs sm:text-sm">
-                    {currentVocab.exampleSentence.japanese}
-                  </p>
-                  <p className="text-[#695d52] text-[11px] sm:text-xs">
-                    {currentVocab.exampleSentence.indonesian}
-                  </p>
+                <div className="bg-[#faf6ee] p-3.5 sm:p-4 rounded-xl border border-[#ebdcc9] space-y-2.5">
+                  <div className="flex items-center justify-between gap-2 border-b border-[#ebdcc9] pb-2">
+                    <span className="text-xs font-bold text-[#7d4838] flex items-center gap-1.5">
+                      <span>📝</span>
+                      <span>Contoh Kalimat (例文)</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => playSentence(currentVocab)}
+                      aria-label="Dengarkan pengucapan contoh kalimat"
+                      className={`px-3 py-1.5 rounded-full text-[11px] font-semibold flex items-center gap-1.5 shadow-xs transition-all active:scale-95 ${
+                        isPlayingSentenceAudio
+                          ? "bg-[#c53d34] text-white scale-105"
+                          : "bg-white border border-[#dac7b3] text-[#7d4838] hover:bg-[#c53d34] hover:text-white"
+                      }`}
+                    >
+                      <span>🔊</span>
+                      <span>{isPlayingSentenceAudio ? "Memutar Kalimat..." : "Dengarkan Kalimat"}</span>
+                    </button>
+                  </div>
+
+                  <div className="space-y-1">
+                    {/* Tulisan Jepang (Kanji & Kana) */}
+                    <div className="font-japanese text-sm sm:text-base font-bold text-[#2b2520] tracking-wide">
+                      {currentVocab.exampleSentence.japanese}
+                    </div>
+
+                    {/* Cara Baca Hiragana / Kana */}
+                    <div className="text-[11px] sm:text-xs text-[#736557]">
+                      <span className="font-medium text-[#948171]">Cara baca: </span>
+                      {currentVocab.exampleSentence.kana}
+                    </div>
+
+                    {/* Romaji */}
+                    <div className="text-[11px] sm:text-xs font-mono font-medium text-[#c53d34]">
+                      {currentVocab.exampleSentence.romaji}
+                    </div>
+
+                    {/* Arti Bahasa Indonesia */}
+                    <div className="text-xs text-[#3d332a] font-medium pt-1 border-t border-[#ede3d4] flex items-start gap-1">
+                      <span className="text-[#948171]">Arti:</span>
+                      <span>&ldquo;{currentVocab.exampleSentence.indonesian}&rdquo;</span>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -644,15 +691,29 @@ export default function PracticePage() {
                         {item.meaning}
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => playAudio(item)}
-                      className="w-8 h-8 rounded-full bg-[#f4ebd9] text-[#784637] hover:bg-[#c53d34] hover:text-white active:scale-90 transition-all flex items-center justify-center flex-shrink-0"
-                      title="Dengarkan Suara"
-                      aria-label={`Dengarkan pengucapan ${item.romaji}`}
-                    >
-                      🔊
-                    </button>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => playAudio(item)}
+                        className="w-8 h-8 rounded-full bg-[#f4ebd9] text-[#784637] hover:bg-[#c53d34] hover:text-white active:scale-90 transition-all flex items-center justify-center"
+                        title="Dengarkan Kata"
+                        aria-label={`Dengarkan pengucapan kata ${item.romaji}`}
+                      >
+                        🔊
+                      </button>
+                      {item.exampleSentence && (
+                        <button
+                          type="button"
+                          onClick={() => playSentence(item)}
+                          className="px-2 h-8 rounded-full bg-[#f4ebd9] text-[#784637] hover:bg-[#c53d34] hover:text-white active:scale-90 transition-all flex items-center gap-1 text-[10px] font-semibold"
+                          title="Dengarkan Contoh Kalimat"
+                          aria-label={`Dengarkan contoh kalimat ${item.romaji}`}
+                        >
+                          <span>💬</span>
+                          <span>Kalimat</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

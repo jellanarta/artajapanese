@@ -1,13 +1,17 @@
+export interface ExampleSentence {
+  japanese: string;
+  kana: string;
+  romaji: string;
+  indonesian: string;
+}
+
 export interface Vocabulary {
   id: number;
   kanji: string;
   kana: string;
   romaji: string;
   meaning: string;
-  exampleSentence?: {
-    japanese: string;
-    indonesian: string;
-  };
+  exampleSentence?: ExampleSentence;
 }
 
 export const VOCABULARY_LIST: Vocabulary[] = [
@@ -19,6 +23,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Menutup",
     exampleSentence: {
       japanese: "ドアを閉めてください。",
+      kana: "どあ を しめて ください。",
+      romaji: "Doa o shimete kudasai.",
       indonesian: "Tolong tutup pintunya."
     }
   },
@@ -30,6 +36,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Membuka",
     exampleSentence: {
       japanese: "窓を開けます。",
+      kana: "まど を あけます。",
+      romaji: "Mado o akemasu.",
       indonesian: "Saya membuka jendela."
     }
   },
@@ -41,6 +49,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Mengambil",
     exampleSentence: {
       japanese: "塩を取ってください。",
+      kana: "しお を とって ください。",
+      romaji: "Shio o totte kudasai.",
       indonesian: "Tolong ambilkan garam."
     }
   },
@@ -52,6 +62,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Memberi (ke orang lain)",
     exampleSentence: {
       japanese: "友達にプレゼントをあげました。",
+      kana: "ともだち に ぷれぜんと を あげました。",
+      romaji: "Tomodachi ni purezento o agemashita.",
       indonesian: "Saya memberi hadiah ke teman."
     }
   },
@@ -63,6 +75,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Memberi (ke saya / Diberi)",
     exampleSentence: {
       japanese: "先生が本をくれました。",
+      kana: "せんせい が ほん を くれました。",
+      romaji: "Sensei ga hon o kuremashita.",
       indonesian: "Guru memberi saya buku."
     }
   },
@@ -74,6 +88,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Membeli",
     exampleSentence: {
       japanese: "新しい靴を買いました。",
+      kana: "あたらしい くつ を かいました。",
+      romaji: "Atarashii kutsu o kaimashita.",
       indonesian: "Saya membeli sepatu baru."
     }
   },
@@ -85,6 +101,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Menjual",
     exampleSentence: {
       japanese: "古いバイクを売ります。",
+      kana: "ふるい ばいく を うります。",
+      romaji: "Furui baiku o urimasu.",
       indonesian: "Saya menjual motor lama."
     }
   },
@@ -96,6 +114,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Lupa",
     exampleSentence: {
       japanese: "宿題を忘れました。",
+      kana: "しゅくだい を わすれました。",
+      romaji: "Shukudai o wasuremashita.",
       indonesian: "Saya lupa PR."
     }
   },
@@ -107,6 +127,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Melihat",
     exampleSentence: {
       japanese: "映画を見ます。",
+      kana: "えいが を みます。",
+      romaji: "Eiga o mimasu.",
       indonesian: "Saya melihat / menonton film."
     }
   },
@@ -117,8 +139,10 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "kiku",
     meaning: "Mendengar atau Bertanya",
     exampleSentence: {
-      japanese: "音楽を聞きます / 先生に聞きます。",
-      indonesian: "Mendengarkan musik / Bertanya ke guru."
+      japanese: "音楽を聞きます。",
+      kana: "おんがく を ききます。",
+      romaji: "Ongaku o kikimasu.",
+      indonesian: "Saya mendengarkan musik."
     }
   },
   {
@@ -129,6 +153,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Bermain",
     exampleSentence: {
       japanese: "公園で遊びます。",
+      kana: "こうえん で あそびます。",
+      romaji: "Kouen de asobimasu.",
       indonesian: "Bermain di taman."
     }
   },
@@ -140,6 +166,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Berjalan",
     exampleSentence: {
       japanese: "駅まで歩きます。",
+      kana: "えき まで あるきます。",
+      romaji: "Eki made arukimasu.",
       indonesian: "Berjalan kaki sampai stasiun."
     }
   },
@@ -151,6 +179,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Mengantuk",
     exampleSentence: {
       japanese: "今日はとても眠いです。",
+      kana: "きょう は とても ねむい です。",
+      romaji: "Kyou wa totemo nemui desu.",
       indonesian: "Hari ini sangat mengantuk."
     }
   },
@@ -162,6 +192,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Terbangun / Terjaga",
     exampleSentence: {
       japanese: "朝6時に目が覚めました。",
+      kana: "あさ ろくじ に め が さめました。",
+      romaji: "Asa rokuji ni me ga samemashita.",
       indonesian: "Saya terbangun jam 6 pagi."
     }
   },
@@ -173,6 +205,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Berdiri",
     exampleSentence: {
       japanese: "名前を呼ばれて立ちました。",
+      kana: "なまえ を よばれて たちました。",
+      romaji: "Namae o yobarete tachimashita.",
       indonesian: "Dipanggil namanya lalu berdiri."
     }
   },
@@ -184,6 +218,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Duduk",
     exampleSentence: {
       japanese: "椅子に座ってください。",
+      kana: "いす に すわって ください。",
+      romaji: "Isu ni suwatte kudasai.",
       indonesian: "Silakan duduk di kursi."
     }
   },
@@ -195,6 +231,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Pulang",
     exampleSentence: {
       japanese: "早く家に帰りたいです。",
+      kana: "はやく いえ に かえりたい です。",
+      romaji: "Hayaku ie ni kaeritai desu.",
       indonesian: "Saya ingin cepat pulang ke rumah."
     }
   },
@@ -206,6 +244,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Pergi",
     exampleSentence: {
       japanese: "日本へ行きます。",
+      kana: "にほん へ いきます。",
+      romaji: "Nihon e ikimasu.",
       indonesian: "Pergi ke Jepang."
     }
   },
@@ -217,6 +257,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Datang",
     exampleSentence: {
       japanese: "明日友達が来ます。",
+      kana: "あした ともだち が きます。",
+      romaji: "Ashita tomodachi ga kimasu.",
       indonesian: "Besok teman datang."
     }
   },
@@ -228,6 +270,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Makan",
     exampleSentence: {
       japanese: "ラーメンを食べます。",
+      kana: "らーめん を たべます。",
+      romaji: "Raamen o tabemasu.",
       indonesian: "Makan ramen."
     }
   },
@@ -239,6 +283,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Minum",
     exampleSentence: {
       japanese: "お茶を飲みます。",
+      kana: "おちゃ を のみます。",
+      romaji: "Ocha o nomimasu.",
       indonesian: "Minum teh hijau."
     }
   },
@@ -250,6 +296,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Tidur",
     exampleSentence: {
       japanese: "夜11時に寝ます。",
+      kana: "よる じゅういちじ に ねます。",
+      romaji: "Yoru juuichiji ni nemasu.",
       indonesian: "Tidur jam 11 malam."
     }
   },
@@ -261,6 +309,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Menelepon",
     exampleSentence: {
       japanese: "母に電話します。",
+      kana: "はは に でんわ します。",
+      romaji: "Haha ni denwa shimasu.",
       indonesian: "Menelepon ibu."
     }
   },
@@ -272,6 +322,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Rumah",
     exampleSentence: {
       japanese: "私の家はあそこです。",
+      kana: "わたし の いえ は あそこ です。",
+      romaji: "Watashi no ie wa asoko desu.",
       indonesian: "Rumah saya ada di sana."
     }
   },
@@ -283,6 +335,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Sekolah",
     exampleSentence: {
       japanese: "学校は楽しいです。",
+      kana: "がっこう は たのしい です。",
+      romaji: "Gakkou wa tanoshii desu.",
       indonesian: "Sekolah itu menyenangkan."
     }
   },
@@ -294,6 +348,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Ke mana",
     exampleSentence: {
       japanese: "今からどこへ行きますか？",
+      kana: "いま から どこ へ いきます か？",
+      romaji: "Ima kara doko e ikimasu ka?",
       indonesian: "Mau pergi ke mana sekarang?"
     }
   },
@@ -305,6 +361,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Membawa",
     exampleSentence: {
       japanese: "傘を持って行きます。",
+      kana: "かさ を もって いきます。",
+      romaji: "Kasa o motte ikimasu.",
       indonesian: "Membawa payung."
     }
   },
@@ -316,6 +374,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Menggunakan / Memakai",
     exampleSentence: {
       japanese: "パソコンを使います。",
+      kana: "ぱそこん を つかいます。",
+      romaji: "Pasokon o tsukaimasu.",
       indonesian: "Menggunakan laptop/komputer."
     }
   },
@@ -327,6 +387,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Tempat",
     exampleSentence: {
       japanese: "静かな場所が好きです。",
+      kana: "しずかな ばしょ が すき です。",
+      romaji: "Shizukana basho ga suki desu.",
       indonesian: "Saya suka tempat yang tenang."
     }
   },
@@ -338,6 +400,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Ke sini",
     exampleSentence: {
       japanese: "ここへ座ってください。",
+      kana: "ここ へ すわって ください。",
+      romaji: "Koko e suwatte kudasai.",
       indonesian: "Silakan duduk ke sini."
     }
   },
@@ -349,6 +413,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Menjawab",
     exampleSentence: {
       japanese: "質問に答えてください。",
+      kana: "しつもん に こたえて ください。",
+      romaji: "Shitsumon ni kotaete kudasai.",
       indonesian: "Tolong jawab pertanyaannya."
     }
   },
@@ -360,6 +426,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Meminjam",
     exampleSentence: {
       japanese: "図書館で本を借ります。",
+      kana: "としょかん で ほん を かります。",
+      romaji: "Toshokan de hon o karimasu.",
       indonesian: "Meminjam buku di perpustakaan."
     }
   },
@@ -371,6 +439,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Tidak tahu",
     exampleSentence: {
       japanese: "その人の名前を知らない。",
+      kana: "その ひと の なまえ を しらない。",
+      romaji: "Sono hito no namae o shiranai.",
       indonesian: "Saya tidak tahu nama orang itu."
     }
   },
@@ -382,6 +452,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Menunggu",
     exampleSentence: {
       japanese: "ここで少し待ってください。",
+      kana: "ここ で すこし まって ください。",
+      romaji: "Koko de sukoshi matte kudasai.",
       indonesian: "Tolong tunggu sebentar di sini."
     }
   },
@@ -393,6 +465,8 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Tidak pernah",
     exampleSentence: {
       japanese: "日本へ行ったことが一度もない。",
+      kana: "にほん へ いった こと が いちども ない。",
+      romaji: "Nihon e itta koto ga ichido mo nai.",
       indonesian: "Sama sekali tidak pernah pergi ke Jepang."
     }
   },
@@ -404,8 +478,9 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     meaning: "Sudah",
     exampleSentence: {
       japanese: "もうご飯を食べましたか？",
+      kana: "もう ごはん を たべました か？",
+      romaji: "Mou gohan o tabemashita ka?",
       indonesian: "Apakah kamu sudah makan?"
     }
   }
 ];
-

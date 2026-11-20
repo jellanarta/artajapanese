@@ -3,11 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { VOCABULARY_LIST, Vocabulary } from "@/data/vocabularies";
-import { playVocabAudio } from "@/utils/audio";
+import { playVocabAudio, playSentenceAudio } from "@/utils/audio";
 
 export default function HomePage() {
   const [search, setSearch] = useState("");
   const [activeAudioId, setActiveAudioId] = useState<number | null>(null);
+  const [activeSentenceAudioId, setActiveSentenceAudioId] = useState<number | null>(null);
+  const [expandedVocabId, setExpandedVocabId] = useState<number | null>(null);
 
   const filteredVocab = VOCABULARY_LIST.filter(
     (item) =>
@@ -17,12 +19,27 @@ export default function HomePage() {
       item.kanji.includes(search)
   );
 
-  const handlePlayAudio = (vocab: Vocabulary) => {
+  const handlePlayAudio = (vocab: Vocabulary, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     setActiveAudioId(vocab.id);
     playVocabAudio(vocab.id, vocab.kana);
     setTimeout(() => {
       setActiveAudioId(null);
     }, 1200);
+  };
+
+  const handlePlaySentenceAudio = (vocab: Vocabulary, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!vocab.exampleSentence) return;
+    setActiveSentenceAudioId(vocab.id);
+    playSentenceAudio(vocab.id, vocab.exampleSentence.kana);
+    setTimeout(() => {
+      setActiveSentenceAudioId(null);
+    }, 3000);
+  };
+
+  const toggleExpand = (id: number) => {
+    setExpandedVocabId((prev) => (prev === id ? null : id));
   };
 
   return (
@@ -146,57 +163,134 @@ export default function HomePage() {
 
         {/* Grid of Vocabulary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3.5">
-          {filteredVocab.map((item) => (
-            <div
-              key={item.id}
-              className="p-3.5 sm:p-4 rounded-xl bg-white border border-[#e8ded0] shadow-sm hover:border-[#c53d34]/40 hover:shadow-md transition-all flex items-center justify-between gap-2 group"
-            >
-              <div className="space-y-0.5 sm:space-y-1 min-w-0">
-                <div className="flex items-baseline gap-1.5 flex-wrap">
-                  <span className="text-base sm:text-lg font-bold text-[#2b2520] font-japanese">
-                    {item.kanji}
-                  </span>
-                  <span className="text-[11px] sm:text-xs text-[#8c7b6e]">
-                    ({item.kana})
-                  </span>
-                </div>
-                <div className="text-[11px] sm:text-xs font-mono font-medium text-[#c53d34] truncate">
-                  {item.romaji}
-                </div>
-                <div className="text-xs font-semibold text-[#554b42] truncate">
-                  {item.meaning}
-                </div>
-              </div>
-
-              {/* Play Audio Button */}
-              <button
-                type="button"
-                onClick={() => handlePlayAudio(item)}
-                title="Dengarkan Pengucapan"
-                aria-label={`Dengarkan pengucapan ${item.romaji}`}
-                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex-shrink-0 flex items-center justify-center transition-all active:scale-90 ${
-                  activeAudioId === item.id
-                    ? "bg-[#c53d34] text-white scale-105"
-                    : "bg-[#f5ede0] text-[#70645a] hover:bg-[#c53d34] hover:text-white"
+          {filteredVocab.map((item) => {
+            const isExpanded = expandedVocabId === item.id;
+            return (
+              <div
+                key={item.id}
+                className={`p-3.5 sm:p-4 rounded-xl bg-white border shadow-sm transition-all group ${
+                  isExpanded
+                    ? "border-[#c53d34] ring-1 ring-[#c53d34]/20 shadow-md"
+                    : "border-[#e8ded0] hover:border-[#c53d34]/40 hover:shadow-md"
                 }`}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"
-                  />
-                </svg>
-              </button>
-            </div>
-          ))}
+                <div className="flex items-center justify-between gap-2">
+                  <div
+                    className="space-y-0.5 sm:space-y-1 min-w-0 cursor-pointer flex-1"
+                    onClick={() => toggleExpand(item.id)}
+                  >
+                    <div className="flex items-baseline gap-1.5 flex-wrap">
+                      <span className="text-base sm:text-lg font-bold text-[#2b2520] font-japanese">
+                        {item.kanji}
+                      </span>
+                      <span className="text-[11px] sm:text-xs text-[#8c7b6e]">
+                        ({item.kana})
+                      </span>
+                    </div>
+                    <div className="text-[11px] sm:text-xs font-mono font-medium text-[#c53d34] truncate">
+                      {item.romaji}
+                    </div>
+                    <div className="text-xs font-semibold text-[#554b42] truncate">
+                      {item.meaning}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    {/* Play Word Audio Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => handlePlayAudio(item, e)}
+                      title="Dengarkan Pengucapan Kata"
+                      aria-label={`Dengarkan pengucapan kata ${item.romaji}`}
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all active:scale-90 ${
+                        activeAudioId === item.id
+                          ? "bg-[#c53d34] text-white scale-105"
+                          : "bg-[#f5ede0] text-[#70645a] hover:bg-[#c53d34] hover:text-white"
+                      }`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"
+                        />
+                      </svg>
+                    </button>
+
+                    {/* Toggle Example Sentence Button */}
+                    <button
+                      type="button"
+                      onClick={() => toggleExpand(item.id)}
+                      title={isExpanded ? "Tutup Contoh Kalimat" : "Buka Contoh Kalimat & Audio"}
+                      aria-label={isExpanded ? "Tutup Contoh Kalimat" : "Buka Contoh Kalimat & Audio"}
+                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs transition-all ${
+                        isExpanded
+                          ? "bg-[#faeae8] text-[#c53d34] rotate-180"
+                          : "bg-[#faf6ee] text-[#8c7e73] hover:bg-[#ede4d5]"
+                      }`}
+                    >
+                      ▼
+                    </button>
+                  </div>
+                </div>
+
+                {/* Expandable Example Sentence Section */}
+                {isExpanded && item.exampleSentence && (
+                  <div className="mt-3 pt-2.5 border-t border-[#ebdcc9] space-y-2 text-xs">
+                    <div className="flex items-center justify-between gap-1.5">
+                      <span className="text-[11px] font-bold text-[#7d4838] flex items-center gap-1">
+                        <span>📝</span>
+                        <span>Contoh Kalimat:</span>
+                      </span>
+
+                      {/* Play Sentence Audio Button */}
+                      <button
+                        type="button"
+                        onClick={(e) => handlePlaySentenceAudio(item, e)}
+                        className={`px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-semibold flex items-center gap-1 transition-all active:scale-95 ${
+                          activeSentenceAudioId === item.id
+                            ? "bg-[#c53d34] text-white scale-105"
+                            : "bg-[#f5ede0] text-[#784637] hover:bg-[#c53d34] hover:text-white"
+                        }`}
+                      >
+                        <span>🔊</span>
+                        <span>
+                          {activeSentenceAudioId === item.id ? "Memutar..." : "Putar Kalimat"}
+                        </span>
+                      </button>
+                    </div>
+
+                    <div className="bg-[#faf6ee] p-2.5 rounded-lg border border-[#ebdcc9] space-y-1">
+                      {/* Japanese sentence */}
+                      <p className="font-japanese text-xs sm:text-sm font-bold text-[#2b2520]">
+                        {item.exampleSentence.japanese}
+                      </p>
+                      {/* Kana reading */}
+                      <p className="text-[10px] sm:text-[11px] text-[#736557]">
+                        <span className="text-[#948171]">Cara baca: </span>
+                        {item.exampleSentence.kana}
+                      </p>
+                      {/* Romaji */}
+                      <p className="text-[10px] sm:text-[11px] font-mono font-medium text-[#c53d34]">
+                        {item.exampleSentence.romaji}
+                      </p>
+                      {/* Indonesian translation */}
+                      <p className="text-[11px] text-[#3d332a] pt-1 border-t border-[#ebdcc9]/50 font-medium">
+                        &ldquo;{item.exampleSentence.indonesian}&rdquo;
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
     </div>
