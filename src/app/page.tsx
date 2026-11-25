@@ -15,6 +15,7 @@ export default function HomePage() {
     (item) =>
       item.romaji.toLowerCase().includes(search.toLowerCase()) ||
       item.meaning.toLowerCase().includes(search.toLowerCase()) ||
+      item.englishMeaning.toLowerCase().includes(search.toLowerCase()) ||
       item.kana.includes(search) ||
       item.kanji.includes(search)
   );
@@ -59,7 +60,7 @@ export default function HomePage() {
             <span className="text-[#c53d34]">Bahasa Jepang</span>
           </h1>
           <p className="text-xs sm:text-base text-[#665a50] max-w-xl mx-auto leading-relaxed">
-            Latihan 36 kosakata esensial dengan audio pengucapan asli, 5 pilihan ganda, kalkulasi Win Rate, dan evaluasi otomatis soal salah.
+            Latihan {VOCABULARY_LIST.length} kosakata esensial dengan audio pengucapan asli, 5 pilihan ganda, arti ID & EN, kalkulasi Win Rate, dan evaluasi otomatis soal salah.
           </p>
         </div>
 
@@ -76,7 +77,7 @@ export default function HomePage() {
             href="#vocab-list"
             className="w-full sm:w-auto px-5 py-3 sm:py-3.5 rounded-xl bg-[#ffffff] border border-[#e2d8c7] text-[#554b42] font-semibold text-sm sm:text-base hover:bg-[#f5ede0] active:scale-98 transition-colors text-center"
           >
-            Lihat 36 Kosakata
+            Lihat {VOCABULARY_LIST.length} Kosakata
           </a>
         </div>
       </section>
@@ -138,7 +139,7 @@ export default function HomePage() {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-lg sm:text-2xl font-bold text-[#2b2520]">
-                Daftar 36 Kosakata
+                Daftar Kosakata
               </h2>
               <span className="text-[11px] sm:text-xs font-semibold px-2 py-0.5 rounded-full bg-[#f0e6d2] text-[#6d5b4d]">
                 {filteredVocab.length} Kata
@@ -192,6 +193,9 @@ export default function HomePage() {
                     </div>
                     <div className="text-xs font-semibold text-[#554b42] truncate">
                       {item.meaning}
+                    </div>
+                    <div className="text-[11px] text-[#7a6d62] italic truncate">
+                      EN: {item.englishMeaning}
                     </div>
                   </div>
 
@@ -283,8 +287,14 @@ export default function HomePage() {
                       </p>
                       {/* Indonesian translation */}
                       <p className="text-[11px] text-[#3d332a] pt-1 border-t border-[#ebdcc9]/50 font-medium">
-                        &ldquo;{item.exampleSentence.indonesian}&rdquo;
+                        ID: &ldquo;{item.exampleSentence.indonesian}&rdquo;
                       </p>
+                      {/* English translation */}
+                      {item.exampleSentence.english && (
+                        <p className="text-[11px] text-[#63554b] italic">
+                          EN: &ldquo;{item.exampleSentence.english}&rdquo;
+                        </p>
+                      )}
                     </div>
                   </div>
                 )}

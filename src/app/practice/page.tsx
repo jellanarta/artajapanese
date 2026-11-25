@@ -30,7 +30,7 @@ export default function PracticePage() {
 
   // Scoring & tracking
   const [isRetestMode, setIsRetestMode] = useState(false);
-  const [initialRunTotal, setInitialRunTotal] = useState(36);
+  const [initialRunTotal, setInitialRunTotal] = useState(VOCABULARY_LIST.length);
   const [firstAttemptCorrect, setFirstAttemptCorrect] = useState(0);
   const [wrongVocabs, setWrongVocabs] = useState<Vocabulary[]>([]);
   const [retestWrongVocabs, setRetestWrongVocabs] = useState<Vocabulary[]>([]);
@@ -534,11 +534,17 @@ export default function PracticePage() {
                       {currentVocab.exampleSentence.romaji}
                     </div>
 
-                    {/* Arti Bahasa Indonesia */}
+                    {/* Arti Bahasa Indonesia & Inggris */}
                     <div className="text-xs text-[#3d332a] font-medium pt-1 border-t border-[#ede3d4] flex items-start gap-1">
                       <span className="text-[#948171]">Arti:</span>
                       <span>&ldquo;{currentVocab.exampleSentence.indonesian}&rdquo;</span>
                     </div>
+                    {currentVocab.exampleSentence.english && (
+                      <div className="text-[11px] text-[#63554b] italic flex items-start gap-1">
+                        <span className="text-[#948171] not-italic font-semibold">EN:</span>
+                        <span>&ldquo;{currentVocab.exampleSentence.english}&rdquo;</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -690,6 +696,9 @@ export default function PracticePage() {
                       <div className="text-[11px] font-semibold text-[#5a4f45] truncate">
                         {item.meaning}
                       </div>
+                      <div className="text-[10px] text-[#7a6d62] italic truncate">
+                        EN: {item.englishMeaning}
+                      </div>
                     </div>
                     <div className="flex items-center gap-1.5 flex-shrink-0">
                       <button
@@ -738,7 +747,7 @@ export default function PracticePage() {
               onClick={() => startQuiz()}
               className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white border border-[#d8cdb9] text-[#554b42] font-semibold text-xs sm:text-sm hover:bg-[#f5ede0] active:scale-98 transition-colors"
             >
-              Ulangi Semua (36 Kata)
+              Ulangi Semua ({VOCABULARY_LIST.length} Kata)
             </button>
 
             <Link

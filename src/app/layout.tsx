@@ -12,7 +12,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: "KotobaMaster (言葉マスター) - Belajar Kosakata Bahasa Jepang",
-  description: "Website latihan dan tes 36 kosakata bahasa Jepang interaktif dengan audio pengucapan asli dan evaluasi win rate.",
+  description: "Website latihan dan tes 41 kosakata bahasa Jepang interaktif dengan audio pengucapan asli, terjemahan Indonesia & Inggris, dan evaluasi win rate.",
 };
 
 export default function RootLayout({
