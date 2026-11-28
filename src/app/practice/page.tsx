@@ -53,6 +53,9 @@ export default function PracticePage() {
   const [inputIsCorrect, setInputIsCorrect] = useState<boolean | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Display settings
+  const [showRomaji, setShowRomaji] = useState(true);
+
   // Audio settings
   const [autoPlay, setAutoPlay] = useState(true);
   const [audioSpeed, setAudioSpeed] = useState<number>(0.9);
@@ -364,8 +367,25 @@ export default function PracticePage() {
           </div>
         </div>
 
-        {/* Audio Controls */}
-        <div className="flex items-center gap-2 justify-end pt-1 sm:pt-0 border-t sm:border-t-0 border-[#f0e8dc]">
+        {/* Controls: Audio & Display Settings */}
+        <div className="flex items-center gap-1.5 sm:gap-2 justify-end pt-1 sm:pt-0 border-t sm:border-t-0 border-[#f0e8dc] flex-wrap">
+          {/* Romaji Visibility Toggle */}
+          <button
+            type="button"
+            onClick={() => setShowRomaji(!showRomaji)}
+            className={`px-2.5 py-1.5 rounded-lg text-[11px] sm:text-xs font-medium border transition-colors flex items-center gap-1 active:scale-95 ${
+              showRomaji
+                ? "bg-[#f4ede2] border-[#dfd2be] text-[#6b5f54]"
+                : "bg-white border-[#e0d6c4] text-[#a09488]"
+            }`}
+            title={showRomaji ? "Sembunyikan tulisan abjad/romaji" : "Tampilkan tulisan abjad/romaji"}
+          >
+            <span>Abjad (Romaji):</span>
+            <span className={showRomaji ? "text-[#c53d34] font-bold" : "text-[#786c62] font-semibold"}>
+              {showRomaji ? "ON" : "OFF"}
+            </span>
+          </button>
+
           <button
             type="button"
             onClick={() => setAutoPlay(!autoPlay)}
@@ -488,12 +508,26 @@ export default function PracticePage() {
                 )}
               </div>
 
-              <div className="text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full bg-[#fbf9f5] border border-[#e8ded0] text-[#8f8175] font-mono">
-                #{currentVocab.id}
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setShowRomaji(!showRomaji)}
+                  className={`text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full border transition-all flex items-center gap-1 active:scale-95 ${
+                    showRomaji
+                      ? "bg-[#faf7f0] border-[#e0d6c4] text-[#6b5f54] hover:bg-[#f0e6d6]"
+                      : "bg-[#faeae8] border-[#eed0ce] text-[#c53d34] font-semibold hover:bg-[#f7dfdd]"
+                  }`}
+                  title={showRomaji ? "Sembunyikan tulisan abjad (romaji)" : "Tampilkan tulisan abjad (romaji)"}
+                >
+                  <span>{showRomaji ? "👁️ Abjad: ON" : "🙈 Abjad: OFF"}</span>
+                </button>
+                <div className="text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full bg-[#fbf9f5] border border-[#e8ded0] text-[#8f8175] font-mono">
+                  #{currentVocab.id}
+                </div>
               </div>
             </div>
 
-            {/* Kanji & Kana */}
+            {/* Kanji & Kana & Romaji */}
             <div className="space-y-1 sm:space-y-2 pt-1">
               <div className="text-3xl sm:text-5xl font-extrabold text-[#2b2520] font-japanese tracking-wide break-words">
                 {currentVocab.kanji}
@@ -501,9 +535,23 @@ export default function PracticePage() {
               <div className="text-sm sm:text-lg text-[#7a6d61] font-medium">
                 {currentVocab.kana}
               </div>
-              <div className="text-xs sm:text-sm font-mono text-[#c53d34] font-semibold">
-                {currentVocab.romaji}
-              </div>
+              {showRomaji ? (
+                <div className="text-xs sm:text-sm font-mono text-[#c53d34] font-semibold">
+                  {currentVocab.romaji}
+                </div>
+              ) : (
+                <div className="pt-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setShowRomaji(true)}
+                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#faf7f0] border border-[#e6d8c5] text-[11px] font-mono text-[#9e8f82] hover:text-[#c53d34] hover:border-[#c53d34]/40 transition-colors shadow-2xs"
+                    title="Klik untuk menampilkan abjad/romaji"
+                  >
+                    <span>👁️</span>
+                    <span>Abjad tersembunyi (klik untuk lihat)</span>
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Audio Button */}
