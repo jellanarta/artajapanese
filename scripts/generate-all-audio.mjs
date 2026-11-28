@@ -3,13 +3,14 @@ import path from "path";
 import https from "https";
 
 const NEW_VOCAB = [
-  { id: 37, kana: "まだ", sentenceKana: "まだ おひるごはん を たべて いません。" },
-  { id: 38, kana: "かす", sentenceKana: "ともだち に かさ を かしました。" },
-  { id: 39, kana: "はなす", sentenceKana: "にほんご で ゆっくり はなして ください。" },
-  { id: 40, kana: "あう", sentenceKana: "あした えき の まえ で ともだち と あいます。" },
-  { id: 41, kana: "おしえる", sentenceKana: "えき への いきかた を おしえて ください。" },
+  { id: 42, kana: "わかる", sentenceKana: "にほんご が すこし わかります。" },
+  { id: 43, kana: "かく", sentenceKana: "ここ に なまえ を かいて ください。" },
+  { id: 44, kana: "よむ", sentenceKana: "まいばん ほん を よみます。" },
+  { id: 45, kana: "やすむ", sentenceKana: "すこし やすみましょう。" },
+  { id: 46, kana: "のる", sentenceKana: "でんしゃ に のって かいしゃ へ いきます。" },
 ];
 
+const TOTAL_COUNT = 46;
 const audioDir = path.resolve("public", "audio");
 if (!fs.existsSync(audioDir)) {
   fs.mkdirSync(audioDir, { recursive: true });
@@ -52,7 +53,7 @@ function downloadTts(text, targetPath) {
 }
 
 async function run() {
-  console.log("Downloading audio for new vocabularies (37-41)...");
+  console.log(`Downloading audio for new vocabularies (42-${TOTAL_COUNT})...`);
   for (const item of NEW_VOCAB) {
     const vocabFile = path.join(audioDir, `vocab-${item.id}.mp3`);
     const sentenceFile = path.join(audioDir, `sentence-${item.id}.mp3`);
@@ -67,9 +68,9 @@ async function run() {
     }
   }
 
-  console.log("Generating audio-base64.ts for 41 vocabularies...");
+  console.log(`Generating audio-base64.ts for ${TOTAL_COUNT} vocabularies...`);
   const vocabB64 = {};
-  for (let i = 1; i <= 41; i++) {
+  for (let i = 1; i <= TOTAL_COUNT; i++) {
     const file = path.join(audioDir, `vocab-${i}.mp3`);
     if (fs.existsSync(file)) {
       const b64 = fs.readFileSync(file).toString("base64");
@@ -79,7 +80,7 @@ async function run() {
     }
   }
   const vocabContent =
-    "// Auto-generated Base64 audio map for 41 vocabularies\n" +
+    `// Auto-generated Base64 audio map for ${TOTAL_COUNT} vocabularies\n` +
     "// Completely eliminates network issues, ngrok warning blocks, and mobile CORS restrictions!\n" +
     "export const AUDIO_BASE64: Record<number, string> = " +
     JSON.stringify(vocabB64, null, 2) +
@@ -87,9 +88,9 @@ async function run() {
   fs.writeFileSync(path.resolve("src", "data", "audio-base64.ts"), vocabContent, "utf8");
   console.log("Done generating audio-base64.ts!");
 
-  console.log("Generating sentence-audio-base64.ts for 41 example sentences...");
+  console.log(`Generating sentence-audio-base64.ts for ${TOTAL_COUNT} example sentences...`);
   const sentenceB64 = {};
-  for (let i = 1; i <= 41; i++) {
+  for (let i = 1; i <= TOTAL_COUNT; i++) {
     const file = path.join(audioDir, `sentence-${i}.mp3`);
     if (fs.existsSync(file)) {
       const b64 = fs.readFileSync(file).toString("base64");
@@ -99,7 +100,7 @@ async function run() {
     }
   }
   const sentenceContent =
-    "// Auto-generated Base64 audio map for 41 example sentences\n" +
+    `// Auto-generated Base64 audio map for ${TOTAL_COUNT} example sentences\n` +
     "export const SENTENCE_AUDIO_BASE64: Record<number, string> = " +
     JSON.stringify(sentenceB64, null, 2) +
     ";\n";

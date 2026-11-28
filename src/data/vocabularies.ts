@@ -673,5 +673,85 @@ export const VOCABULARY_LIST: Vocabulary[] = [
       indonesian: "Tolong beritahu saya cara pergi ke stasiun.",
       english: "Please tell me how to get to the station."
     }
+  },
+  {
+    id: 42,
+    kanji: "分かる",
+    kana: "わかる",
+    romaji: "wakaru",
+    meaning: "Mengerti / Paham",
+    englishMeaning: "To understand / To know",
+    acceptedAnswers: ["mengerti", "paham", "tahu", "mengerti/paham", "mengerti atau paham", "understand", "know"],
+    exampleSentence: {
+      japanese: "日本語が少し分かります。",
+      kana: "にほんご が すこし わかります。",
+      romaji: "Nihongo ga sukoshi wakarimasu.",
+      indonesian: "Saya mengerti sedikit bahasa Jepang.",
+      english: "I understand a little Japanese."
+    }
+  },
+  {
+    id: 43,
+    kanji: "書く",
+    kana: "かく",
+    romaji: "kaku",
+    meaning: "Menulis",
+    englishMeaning: "To write",
+    acceptedAnswers: ["menulis", "tulis", "menuliskan", "write"],
+    exampleSentence: {
+      japanese: "ここに名前を書いてください。",
+      kana: "ここ に なまえ を かいて ください。",
+      romaji: "Koko ni namae o kaite kudasai.",
+      indonesian: "Tolong tulis nama di sini.",
+      english: "Please write your name here."
+    }
+  },
+  {
+    id: 44,
+    kanji: "読む",
+    kana: "よむ",
+    romaji: "yomu",
+    meaning: "Membaca",
+    englishMeaning: "To read",
+    acceptedAnswers: ["membaca", "baca", "read"],
+    exampleSentence: {
+      japanese: "毎晩本を読みます。",
+      kana: "まいばん ほん を よみます。",
+      romaji: "Maiban hon o yomimasu.",
+      indonesian: "Setiap malam saya membaca buku.",
+      english: "I read a book every night."
+    }
+  },
+  {
+    id: 45,
+    kanji: "休む",
+    kana: "やすむ",
+    romaji: "yasumu",
+    meaning: "Beristirahat / Libur",
+    englishMeaning: "To rest / To take a break",
+    acceptedAnswers: ["beristirahat", "istirahat", "libur", "rehat", "rest", "take a break"],
+    exampleSentence: {
+      japanese: "少し休みましょう。",
+      kana: "すこし やすみましょう。",
+      romaji: "Sukoshi yasumimashou.",
+      indonesian: "Mari beristirahat sebentar.",
+      english: "Let's take a short break."
+    }
+  },
+  {
+    id: 46,
+    kanji: "乗る",
+    kana: "のる",
+    romaji: "noru",
+    meaning: "Naik (kendaraan)",
+    englishMeaning: "To ride / To get on (vehicle)",
+    acceptedAnswers: ["naik", "menaiki", "ride", "get on"],
+    exampleSentence: {
+      japanese: "電車に乗って会社へ行きます。",
+      kana: "でんしゃ に のって かいしゃ へ いきます。",
+      romaji: "Densha ni notte kaisha e ikimasu.",
+      indonesian: "Naik kereta pergi ke kantor.",
+      english: "I take the train to go to the office."
+    }
   }
 ];

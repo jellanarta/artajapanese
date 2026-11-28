@@ -1,6 +1,6 @@
 # KotobaMaster (言葉マスター) - Japanese Vocabulary Trainer
 
-Aplikasi web interaktif untuk belajar dan menguji 41 kosakata esensial bahasa Jepang dengan audio pengucapan asli, sistem 5 pilihan ganda, arti bahasa Indonesia & bahasa Inggris, perhitungan Win Rate (WR), dan loop otomatis untuk mengulang soal yang salah.
+Aplikasi web interaktif untuk belajar dan menguji 46 kosakata esensial bahasa Jepang dengan audio pengucapan asli, sistem 5 pilihan ganda, mode isian ketik, arti bahasa Indonesia & bahasa Inggris, perhitungan Win Rate (WR), dan loop otomatis untuk mengulang soal yang salah.
 
 Dibangun dengan **Next.js (App Router)** dan **Tailwind CSS**, siap langsung di-deploy ke **Vercel**.
 
@@ -26,7 +26,7 @@ Dibangun dengan **Next.js (App Router)** dan **Tailwind CSS**, siap langsung di-
 
 ---
 
-## 📚 Daftar 41 Kosakata (Revisi Tulisan, Arti ID & EN)
+## 📚 Daftar 46 Kosakata (Revisi Tulisan, Arti ID & EN)
 
 | No | Romaji | Kanji / Kana | Arti Bahasa Indonesia | English Meaning |
 |---|---|---|---|---|
@@ -71,6 +71,11 @@ Dibangun dengan **Next.js (App Router)** dan **Tailwind CSS**, siap langsung di-
 | 39 | hanasu | 話す (はなす) | Berbicara | To speak / To talk |
 | 40 | au | 会う (あう) | Bertemu | To meet |
 | 41 | oshieru | 教える (おしえる) | Mengajar / Memberitahu | To teach / To tell |
+| 42 | wakaru | 分かる (わかる) | Mengerti / Paham | To understand / To know |
+| 43 | kaku | 書く (かく) | Menulis | To write |
+| 44 | yomu | 読む (よむ) | Membaca | To read |
+| 45 | yasumu | 休む (やすむ) | Beristirahat / Libur | To rest / To take a break |
+| 46 | noru | 乗る (のる) | Naik (kendaraan) | To ride / To get on (vehicle) |
 
 ---
 
