@@ -47,6 +47,12 @@ export default function PracticePage() {
   const [isAnswered, setIsAnswered] = useState(false);
   const [options, setOptions] = useState<QuizOption[]>([]);
 
+  // Quiz Mode: "multiple_choice" (Pilihan Ganda) vs "text_input" (Isian / Ketik)
+  const [quizMode, setQuizMode] = useState<"multiple_choice" | "text_input">("multiple_choice");
+  const [typedAnswer, setTypedAnswer] = useState("");
+  const [inputIsCorrect, setInputIsCorrect] = useState<boolean | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
   // Audio settings
   const [autoPlay, setAutoPlay] = useState(true);
   const [audioSpeed, setAudioSpeed] = useState<number>(0.9);
@@ -68,6 +74,8 @@ export default function PracticePage() {
     setIsFinished(false);
     setSelectedOptionIndex(null);
     setIsAnswered(false);
+    setTypedAnswer("");
+    setInputIsCorrect(null);
     setElapsedSeconds(0);
     setAnswerDuration(null);
 
@@ -183,7 +191,69 @@ export default function PracticePage() {
     }
   };
 
+  // Auto focus input when switching to text input or moving to next question
+  useEffect(() => {
+    if (quizMode === "text_input" && !isAnswered && !isFinished) {
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 60);
+      return () => clearTimeout(timer);
+    }
+  }, [currentIndex, quizMode, isAnswered, isFinished]);
+
+  const handleSubmitInput = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (isAnswered || !currentVocab) return;
+
+    const trimmed = typedAnswer.trim().toLowerCase();
+    if (!trimmed) return;
+
+    const duration = questionStartTime > 0 ? (Date.now() - questionStartTime) / 1000 : 1.0;
+    setAnswerDuration(duration);
+    setIsAnswered(true);
+
+    // Normalize accepted answers
+    const validAnswers = (currentVocab.acceptedAnswers || []).map((a) => a.trim().toLowerCase());
+    const isMatch = validAnswers.includes(trimmed) || currentVocab.meaning.trim().toLowerCase() === trimmed;
+
+    setInputIsCorrect(isMatch);
+
+    if (!isRetestMode) {
+      setTotalTimeSpent((prev) => prev + duration);
+
+      if (isMatch) {
+        setFirstAttemptCorrect((prev) => prev + 1);
+        const points = duration <= 3.0 ? 1.0 : duration <= 6.0 ? 0.85 : 0.65;
+        setSpeedPointsTotal((prev) => prev + points);
+      } else {
+        setWrongVocabs((prev) => [...prev, currentVocab]);
+      }
+    } else {
+      if (!isMatch) {
+        setRetestWrongVocabs((prev) => [...prev, currentVocab]);
+      }
+    }
+  };
+
+  const handleSkipInput = () => {
+    if (isAnswered || !currentVocab) return;
+
+    const duration = questionStartTime > 0 ? (Date.now() - questionStartTime) / 1000 : 3.0;
+    setAnswerDuration(duration);
+    setIsAnswered(true);
+    setInputIsCorrect(false);
+
+    if (!isRetestMode) {
+      setTotalTimeSpent((prev) => prev + duration);
+      setWrongVocabs((prev) => [...prev, currentVocab]);
+    } else {
+      setRetestWrongVocabs((prev) => [...prev, currentVocab]);
+    }
+  };
+
   const handleNextQuestion = () => {
+    setTypedAnswer("");
+    setInputIsCorrect(null);
     if (currentIndex + 1 < queue.length) {
       setCurrentIndex((prev) => prev + 1);
     } else {
@@ -321,6 +391,51 @@ export default function PracticePage() {
         </div>
       </div>
 
+      {/* Mode Switcher Banner */}
+      {!isFinished && (
+        <div className="flex items-center justify-between p-2 rounded-2xl bg-white border border-[#e8dfcf] shadow-xs gap-2">
+          <div className="flex items-center gap-1.5 pl-2">
+            <span className="text-xs sm:text-sm font-semibold text-[#554b42]">Mode Ujian:</span>
+          </div>
+          <div className="inline-flex p-1 rounded-xl bg-[#f4ede2] border border-[#e2d6c2] text-xs font-semibold">
+            <button
+              type="button"
+              disabled={isAnswered}
+              onClick={() => {
+                setQuizMode("multiple_choice");
+                setTypedAnswer("");
+                setInputIsCorrect(null);
+              }}
+              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+                quizMode === "multiple_choice"
+                  ? "bg-white text-[#c53d34] shadow-xs font-bold"
+                  : "text-[#786b5e] hover:text-[#2b2520]"
+              }`}
+            >
+              <span>🎯</span>
+              <span>Pilihan Ganda</span>
+            </button>
+            <button
+              type="button"
+              disabled={isAnswered}
+              onClick={() => {
+                setQuizMode("text_input");
+                setTypedAnswer("");
+                setInputIsCorrect(null);
+              }}
+              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+                quizMode === "text_input"
+                  ? "bg-white text-[#c53d34] shadow-xs font-bold"
+                  : "text-[#786b5e] hover:text-[#2b2520]"
+              }`}
+            >
+              <span>✍️</span>
+              <span>Isian / Ketik</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Main Content Area */}
       {!isFinished && currentVocab ? (
         <div className="space-y-4 sm:space-y-6">
@@ -409,57 +524,153 @@ export default function PracticePage() {
             </div>
 
             <p className="text-[11px] sm:text-xs text-[#8c7e73] italic">
-              Pilih arti yang tepat dalam bahasa Indonesia di bawah:
+              {quizMode === "multiple_choice"
+                ? "Pilih arti yang tepat dalam bahasa Indonesia di bawah:"
+                : "Ketik arti kata ini dalam bahasa Indonesia di bawah (lalu tekan Enter):"}
             </p>
           </div>
 
-          {/* 5 Multiple Choice Options (2-Column Grid for Fast Tapping without Scrolling) */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
-            {options.map((opt, idx) => {
-              const isSelected = selectedOptionIndex === idx;
-              const isLastOption = idx === options.length - 1;
+          {/* Mode 1: Multiple Choice Options */}
+          {quizMode === "multiple_choice" ? (
+            <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
+              {options.map((opt, idx) => {
+                const isSelected = selectedOptionIndex === idx;
+                const isLastOption = idx === options.length - 1;
 
-              let btnStyle = "bg-white border-[#e0d6c4] text-[#332b25] hover:border-[#c53d34]/60 hover:bg-[#fcfbf8] active:bg-[#f8f5ee]";
+                let btnStyle = "bg-white border-[#e0d6c4] text-[#332b25] hover:border-[#c53d34]/60 hover:bg-[#fcfbf8] active:bg-[#f8f5ee]";
 
-              if (isAnswered) {
-                if (opt.isCorrect) {
-                  // Correct answer is always green
-                  btnStyle = "bg-[#e8f5e9] border-[#66bb6a] text-[#1b5e20] font-bold shadow-sm";
-                } else if (isSelected && !opt.isCorrect) {
-                  // Chosen wrong answer is red
-                  btnStyle = "bg-[#ffebee] border-[#ef5350] text-[#c62828] font-bold";
-                } else {
-                  // Other unselected options dimmed
-                  btnStyle = "bg-[#faf8f4] border-[#e8ded0] text-[#9c8e82] opacity-50";
+                if (isAnswered) {
+                  if (opt.isCorrect) {
+                    // Correct answer is always green
+                    btnStyle = "bg-[#e8f5e9] border-[#66bb6a] text-[#1b5e20] font-bold shadow-sm";
+                  } else if (isSelected && !opt.isCorrect) {
+                    // Chosen wrong answer is red
+                    btnStyle = "bg-[#ffebee] border-[#ef5350] text-[#c62828] font-bold";
+                  } else {
+                    // Other unselected options dimmed
+                    btnStyle = "bg-[#faf8f4] border-[#e8ded0] text-[#9c8e82] opacity-50";
+                  }
                 }
-              }
 
-              return (
-                <button
-                  key={idx}
-                  type="button"
-                  disabled={isAnswered}
-                  onClick={() => handleSelectOption(idx)}
-                  className={`min-h-[46px] sm:min-h-[52px] p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border text-left font-medium text-xs sm:text-sm flex items-center justify-between gap-2 transition-all active:scale-[0.98] ${btnStyle} ${
-                    isLastOption ? "col-span-2" : "col-span-1"
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    disabled={isAnswered}
+                    onClick={() => handleSelectOption(idx)}
+                    className={`min-h-[46px] sm:min-h-[52px] p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border text-left font-medium text-xs sm:text-sm flex items-center justify-between gap-2 transition-all active:scale-[0.98] ${btnStyle} ${
+                      isLastOption ? "col-span-2" : "col-span-1"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+                      <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#f4ece0] text-[#6b5e53] text-[10px] sm:text-xs font-bold flex items-center justify-center border border-[#e0d6c4] flex-shrink-0">
+                        {String.fromCharCode(65 + idx)}
+                      </span>
+                      <span className="leading-snug break-words text-xs sm:text-sm">{opt.text}</span>
+                    </div>
+
+                    {isAnswered && (
+                      <span className="text-[11px] sm:text-xs flex-shrink-0 font-bold">
+                        {opt.isCorrect ? "✓" : isSelected ? "✗" : ""}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            /* Mode 2: Text Input Form */
+            <div className="space-y-3">
+              <form onSubmit={handleSubmitInput} className="space-y-2">
+                <div className="relative">
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    disabled={isAnswered}
+                    value={typedAnswer}
+                    onChange={(e) => setTypedAnswer(e.target.value)}
+                    placeholder="Ketik arti kata di sini... (misal: mendengar)"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    className={`w-full px-4 py-3.5 sm:py-4 rounded-2xl border text-sm sm:text-base font-medium transition-all shadow-sm focus:outline-none ${
+                      isAnswered
+                        ? inputIsCorrect
+                          ? "bg-[#e8f5e9] border-[#66bb6a] text-[#1b5e20]"
+                          : "bg-[#ffebee] border-[#ef5350] text-[#c62828]"
+                        : "bg-white border-[#d8cdb9] text-[#2b2520] focus:ring-2 focus:ring-[#c53d34] focus:border-transparent"
+                    }`}
+                  />
+                  {!isAnswered && typedAnswer.trim() && (
+                    <button
+                      type="submit"
+                      className="absolute right-2 top-2 bottom-2 px-4 rounded-xl bg-[#c53d34] text-white text-xs sm:text-sm font-semibold hover:bg-[#b0342b] active:scale-95 transition-all flex items-center gap-1 shadow-xs"
+                    >
+                      <span>Kirim</span>
+                      <span>↵</span>
+                    </button>
+                  )}
+                </div>
+
+                {!isAnswered && (
+                  <div className="flex items-center justify-between text-xs px-1">
+                    <span className="text-[#8c7e73] text-[11px]">
+                      💡 Cukup ketik salah satu artinya atau kata dasarnya.
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleSkipInput}
+                      className="text-[#9c8e82] hover:text-[#c53d34] font-medium text-[11px] underline underline-offset-2"
+                    >
+                      Tidak Tahu (Lewati)
+                    </button>
+                  </div>
+                )}
+              </form>
+
+              {/* Input Result Feedback Card */}
+              {isAnswered && (
+                <div
+                  className={`p-3.5 sm:p-4 rounded-2xl border text-left space-y-1.5 transition-all ${
+                    inputIsCorrect
+                      ? "bg-[#e8f5e9] border-[#a5d6a7]"
+                      : "bg-[#ffebee] border-[#ef9a9a]"
                   }`}
                 >
-                  <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-                    <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#f4ece0] text-[#6b5e53] text-[10px] sm:text-xs font-bold flex items-center justify-center border border-[#e0d6c4] flex-shrink-0">
-                      {String.fromCharCode(65 + idx)}
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={`text-xs sm:text-sm font-bold flex items-center gap-1.5 ${
+                        inputIsCorrect ? "text-[#2e7d32]" : "text-[#c62828]"
+                      }`}
+                    >
+                      <span>{inputIsCorrect ? "✓ Tepat Sekali!" : "✗ Kurang Tepat"}</span>
                     </span>
-                    <span className="leading-snug break-words text-xs sm:text-sm">{opt.text}</span>
+                    {typedAnswer && (
+                      <span className="text-[11px] text-[#554b42]">
+                        Jawabanmu: &ldquo;{typedAnswer}&rdquo;
+                      </span>
+                    )}
                   </div>
 
-                  {isAnswered && (
-                    <span className="text-[11px] sm:text-xs flex-shrink-0 font-bold">
-                      {opt.isCorrect ? "✓" : isSelected ? "✗" : ""}
-                    </span>
+                  <div className="text-xs text-[#2b2520] font-medium">
+                    <span>Arti utama: </span>
+                    <strong className="text-[#c53d34]">{currentVocab.meaning}</strong>
+                    <span className="text-[#786c62] italic ml-1">({currentVocab.englishMeaning})</span>
+                  </div>
+
+                  {/* Show all accepted answers */}
+                  {currentVocab.acceptedAnswers.length > 1 && (
+                    <div className="text-[11px] text-[#5e5145] pt-1 border-t border-black/5">
+                      <span className="text-[#7a6d61]">Variasi jawaban yang diterima: </span>
+                      <span className="font-semibold text-[#3d332a]">
+                        {currentVocab.acceptedAnswers.join(", ")}
+                      </span>
+                    </div>
                   )}
-                </button>
-              );
-            })}
-          </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Post-Answer Feedback & Next Button */}
           {isAnswered && (
@@ -475,7 +686,9 @@ export default function PracticePage() {
                   </div>
                   <span
                     className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                      options[selectedOptionIndex ?? 0]?.isCorrect
+                      (quizMode === "multiple_choice"
+                        ? options[selectedOptionIndex ?? 0]?.isCorrect
+                        : inputIsCorrect)
                         ? answerDuration <= 3.0
                           ? "bg-[#e8f5e9] text-[#2e7d32]"
                           : answerDuration <= 6.0
@@ -484,7 +697,9 @@ export default function PracticePage() {
                         : "bg-[#ffebee] text-[#c62828]"
                     }`}
                   >
-                    {options[selectedOptionIndex ?? 0]?.isCorrect
+                    {(quizMode === "multiple_choice"
+                      ? options[selectedOptionIndex ?? 0]?.isCorrect
+                      : inputIsCorrect)
                       ? answerDuration <= 3.0
                         ? "⚡ Kilat (100% Poin)"
                         : answerDuration <= 6.0

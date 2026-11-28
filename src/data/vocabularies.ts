@@ -13,6 +13,7 @@ export interface Vocabulary {
   romaji: string;
   meaning: string;
   englishMeaning: string;
+  acceptedAnswers: string[];
   exampleSentence?: ExampleSentence;
 }
 
@@ -24,6 +25,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "shimeru",
     meaning: "Menutup",
     englishMeaning: "To close / To shut",
+    acceptedAnswers: ["menutup", "tutup", "menutupkan", "close", "shut"],
     exampleSentence: {
       japanese: "ドアを閉めてください。",
       kana: "どあ を しめて ください。",
@@ -39,6 +41,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "akeru",
     meaning: "Membuka",
     englishMeaning: "To open",
+    acceptedAnswers: ["membuka", "buka", "membukakan", "open"],
     exampleSentence: {
       japanese: "窓を開けます。",
       kana: "まど を あけます。",
@@ -54,6 +57,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "toru",
     meaning: "Mengambil",
     englishMeaning: "To take / To pass",
+    acceptedAnswers: ["mengambil", "ambil", "mengambilkan", "take", "pass"],
     exampleSentence: {
       japanese: "塩を取ってください。",
       kana: "しお を とって ください。",
@@ -69,6 +73,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "ageru",
     meaning: "Memberi (ke orang lain)",
     englishMeaning: "To give (to someone else)",
+    acceptedAnswers: ["memberi", "memberikan", "beri", "kasih", "give"],
     exampleSentence: {
       japanese: "友達にプレゼントをあげました。",
       kana: "ともだち に ぷれぜんと を あげました。",
@@ -84,6 +89,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "kureru",
     meaning: "Memberi (ke saya / Diberi)",
     englishMeaning: "To give (to me)",
+    acceptedAnswers: ["memberi", "memberikan", "beri", "kasih", "diberi", "give"],
     exampleSentence: {
       japanese: "先生が本をくれました。",
       kana: "せんせい が ほん を くれました。",
@@ -99,6 +105,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "kau",
     meaning: "Membeli",
     englishMeaning: "To buy",
+    acceptedAnswers: ["membeli", "beli", "buy"],
     exampleSentence: {
       japanese: "新しい靴を買いました。",
       kana: "あたらしい くつ を かいました。",
@@ -114,6 +121,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "uru",
     meaning: "Menjual",
     englishMeaning: "To sell",
+    acceptedAnswers: ["menjual", "jual", "sell"],
     exampleSentence: {
       japanese: "古いバイクを売ります。",
       kana: "ふるい ばいく を うります。",
@@ -129,6 +137,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "wasureru",
     meaning: "Lupa",
     englishMeaning: "To forget",
+    acceptedAnswers: ["lupa", "melupakan", "forget"],
     exampleSentence: {
       japanese: "宿題を忘れました。",
       kana: "しゅくだい を わすれました。",
@@ -144,6 +153,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "miru",
     meaning: "Melihat",
     englishMeaning: "To see / To watch",
+    acceptedAnswers: ["melihat", "lihat", "menonton", "tonton", "see", "watch"],
     exampleSentence: {
       japanese: "映画を見ます。",
       kana: "えいが を みます。",
@@ -159,6 +169,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "kiku",
     meaning: "Mendengar atau Bertanya",
     englishMeaning: "To listen / To hear / To ask",
+    acceptedAnswers: ["mendengar", "dengar", "mendengarkan", "bertanya", "tanya", "menanyakan", "listen", "hear", "ask"],
     exampleSentence: {
       japanese: "音楽を聞きます。",
       kana: "おんがく を ききます。",
@@ -174,6 +185,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "asobu",
     meaning: "Bermain",
     englishMeaning: "To play / To hang out",
+    acceptedAnswers: ["bermain", "main", "play", "hang out"],
     exampleSentence: {
       japanese: "公園で遊びます。",
       kana: "こうえん で あそびます。",
@@ -189,6 +201,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "aruku",
     meaning: "Berjalan",
     englishMeaning: "To walk",
+    acceptedAnswers: ["berjalan", "jalan", "berjalan kaki", "jalan kaki", "walk"],
     exampleSentence: {
       japanese: "駅まで歩きます。",
       kana: "えき まで あるきます。",
@@ -204,6 +217,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "nemui",
     meaning: "Mengantuk",
     englishMeaning: "Sleepy",
+    acceptedAnswers: ["mengantuk", "ngantuk", "sleepy"],
     exampleSentence: {
       japanese: "今日はとても眠いです。",
       kana: "きょう は とても ねむい です。",
@@ -219,6 +233,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "me ga sameru",
     meaning: "Terbangun / Terjaga",
     englishMeaning: "To wake up / To open one's eyes",
+    acceptedAnswers: ["terbangun", "bangun", "terjaga", "melek", "wake up"],
     exampleSentence: {
       japanese: "朝6時に目が覚めました。",
       kana: "あさ ろくじ に め が さめました。",
@@ -234,6 +249,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "tatsu",
     meaning: "Berdiri",
     englishMeaning: "To stand",
+    acceptedAnswers: ["berdiri", "stand"],
     exampleSentence: {
       japanese: "名前を呼ばれて立ちました。",
       kana: "なまえ を よばれて たちました。",
@@ -249,6 +265,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "suwaru",
     meaning: "Duduk",
     englishMeaning: "To sit",
+    acceptedAnswers: ["duduk", "sit"],
     exampleSentence: {
       japanese: "椅子に座ってください。",
       kana: "いす に すわって ください。",
@@ -264,6 +281,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "kaeru",
     meaning: "Pulang",
     englishMeaning: "To return home / To go back",
+    acceptedAnswers: ["pulang", "kembali", "kembali pulang", "go home", "return"],
     exampleSentence: {
       japanese: "早く家に帰りたいです。",
       kana: "はやく いえ に かえりたい です。",
@@ -279,6 +297,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "iku",
     meaning: "Pergi",
     englishMeaning: "To go",
+    acceptedAnswers: ["pergi", "go"],
     exampleSentence: {
       japanese: "日本へ行きます。",
       kana: "にほん へ いきます。",
@@ -294,6 +313,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "kuru",
     meaning: "Datang",
     englishMeaning: "To come",
+    acceptedAnswers: ["datang", "come"],
     exampleSentence: {
       japanese: "明日友達が来ます。",
       kana: "あした ともだち が きます。",
@@ -309,6 +329,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "taberu",
     meaning: "Makan",
     englishMeaning: "To eat",
+    acceptedAnswers: ["makan", "eat"],
     exampleSentence: {
       japanese: "ラーメンを食べます。",
       kana: "らーめん を たべます。",
@@ -324,6 +345,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "nomu",
     meaning: "Minum",
     englishMeaning: "To drink",
+    acceptedAnswers: ["minum", "drink"],
     exampleSentence: {
       japanese: "お茶を飲みます。",
       kana: "おちゃ を のみます。",
@@ -339,6 +361,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "neru",
     meaning: "Tidur",
     englishMeaning: "To sleep / To go to bed",
+    acceptedAnswers: ["tidur", "sleep"],
     exampleSentence: {
       japanese: "夜11時に寝ます。",
       kana: "よる じゅういちじ に ねます。",
@@ -354,6 +377,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "denwa suru",
     meaning: "Menelepon",
     englishMeaning: "To make a phone call",
+    acceptedAnswers: ["menelepon", "menelpon", "telepon", "telpon", "call", "phone"],
     exampleSentence: {
       japanese: "母に電話します。",
       kana: "はは に でんわ します。",
@@ -369,6 +393,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "ie",
     meaning: "Rumah",
     englishMeaning: "House / Home",
+    acceptedAnswers: ["rumah", "house", "home"],
     exampleSentence: {
       japanese: "私の家はあそこです。",
       kana: "わたし の いえ は あそこ です。",
@@ -384,6 +409,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "gakkou",
     meaning: "Sekolah",
     englishMeaning: "School",
+    acceptedAnswers: ["sekolah", "school"],
     exampleSentence: {
       japanese: "学校は楽しいです。",
       kana: "がっこう は たのしい です。",
@@ -399,6 +425,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "doko e",
     meaning: "Ke mana",
     englishMeaning: "Where to",
+    acceptedAnswers: ["ke mana", "kemana", "where", "where to"],
     exampleSentence: {
       japanese: "今からどこへ行きますか？",
       kana: "いま から どこ へ いきます か？",
@@ -414,6 +441,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "motte iku",
     meaning: "Membawa",
     englishMeaning: "To take (something) along",
+    acceptedAnswers: ["membawa", "bawa", "take", "bring"],
     exampleSentence: {
       japanese: "傘を持って行きます。",
       kana: "かさ を もって いきます。",
@@ -429,6 +457,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "tsukau",
     meaning: "Menggunakan / Memakai",
     englishMeaning: "To use",
+    acceptedAnswers: ["menggunakan", "memakai", "pakai", "gunakan", "guna", "use"],
     exampleSentence: {
       japanese: "パソコンを使います。",
       kana: "ぱそこん を つかいます。",
@@ -444,6 +473,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "basho",
     meaning: "Tempat",
     englishMeaning: "Place / Location",
+    acceptedAnswers: ["tempat", "lokasi", "place", "location"],
     exampleSentence: {
       japanese: "静かな場所が好きです。",
       kana: "しずかな ばしょ が すき です。",
@@ -459,6 +489,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "koko e",
     meaning: "Ke sini",
     englishMeaning: "To here / Over here",
+    acceptedAnswers: ["ke sini", "kesini", "here", "to here"],
     exampleSentence: {
       japanese: "ここへ座ってください。",
       kana: "ここ へ すわって ください。",
@@ -474,6 +505,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "kotaeru",
     meaning: "Menjawab",
     englishMeaning: "To answer / To reply",
+    acceptedAnswers: ["menjawab", "jawab", "answer", "reply"],
     exampleSentence: {
       japanese: "質問に答えてください。",
       kana: "しつもん に こたえて ください。",
@@ -489,6 +521,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "kariru",
     meaning: "Meminjam",
     englishMeaning: "To borrow / To rent",
+    acceptedAnswers: ["meminjam", "pinjam", "sewa", "menyewa", "borrow", "rent"],
     exampleSentence: {
       japanese: "図書館で本を借ります。",
       kana: "としょかん で ほん を かります。",
@@ -504,6 +537,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "shiranai",
     meaning: "Tidak tahu",
     englishMeaning: "Do not know",
+    acceptedAnswers: ["tidak tahu", "tak tahu", "gatau", "gak tahu", "tidak kenal", "don't know", "not know"],
     exampleSentence: {
       japanese: "その人の名前を知らない。",
       kana: "その ひと の なまえ を しらない。",
@@ -519,6 +553,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "matsu",
     meaning: "Menunggu",
     englishMeaning: "To wait",
+    acceptedAnswers: ["menunggu", "tunggu", "wait"],
     exampleSentence: {
       japanese: "ここで少し待ってください。",
       kana: "ここ で すこし まって ください。",
@@ -534,6 +569,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "ichido mo nai",
     meaning: "Tidak pernah",
     englishMeaning: "Never / Not even once",
+    acceptedAnswers: ["tidak pernah", "tak pernah", "belum pernah", "sama sekali tidak pernah", "never"],
     exampleSentence: {
       japanese: "日本へ行ったことが一度もない。",
       kana: "にほん へ いった こと が いちども ない。",
@@ -549,6 +585,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "mou",
     meaning: "Sudah",
     englishMeaning: "Already / Yet",
+    acceptedAnswers: ["sudah", "udah", "already", "yet"],
     exampleSentence: {
       japanese: "もうご飯を食べましたか？",
       kana: "もう ごはん を たべました か？",
@@ -564,6 +601,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "mada",
     meaning: "Belum",
     englishMeaning: "Not yet / Still",
+    acceptedAnswers: ["belum", "masih", "not yet", "still"],
     exampleSentence: {
       japanese: "まだお昼ご飯を食べていません。",
       kana: "まだ おひるごはん を たべて いません。",
@@ -579,6 +617,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "kasu",
     meaning: "Meminjamkan",
     englishMeaning: "To lend",
+    acceptedAnswers: ["meminjamkan", "pinjamkan", "pinjami", "meminjami", "lend"],
     exampleSentence: {
       japanese: "友達に傘を貸しました。",
       kana: "ともだち に かさ を かしました。",
@@ -594,6 +633,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "hanasu",
     meaning: "Berbicara",
     englishMeaning: "To speak / To talk",
+    acceptedAnswers: ["berbicara", "bicara", "ngomong", "omong", "speak", "talk"],
     exampleSentence: {
       japanese: "日本語でゆっくり話してください。",
       kana: "にほんご で ゆっくり はなして ください。",
@@ -609,6 +649,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "au",
     meaning: "Bertemu",
     englishMeaning: "To meet",
+    acceptedAnswers: ["bertemu", "temu", "menemui", "jumpa", "berjumpa", "meet"],
     exampleSentence: {
       japanese: "明日駅の前で友達と会います。",
       kana: "あした えき の まえ で ともだち と あいます。",
@@ -624,6 +665,7 @@ export const VOCABULARY_LIST: Vocabulary[] = [
     romaji: "oshieru",
     meaning: "Mengajar / Memberitahu",
     englishMeaning: "To teach / To tell",
+    acceptedAnswers: ["mengajar", "mengajari", "ajari", "ajar", "memberitahu", "beritahu", "kasih tahu", "memberi tahu", "teach", "tell"],
     exampleSentence: {
       japanese: "駅への行き方を教えてください。",
       kana: "えき への いきかた を おしえて ください。",
